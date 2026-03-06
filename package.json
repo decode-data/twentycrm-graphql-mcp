@@ -1,0 +1,21 @@
+{
+  "name": "twentycrm-graphql-mcp",
+  "version": "0.0.1",
+  "description": "MCP server for Twenty CRM GraphQL API",
+  "type": "module",
+  "bin": {
+    "twentycrm-graphql-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.7.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.0.0"
+  }
+}
