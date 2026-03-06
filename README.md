@@ -15,7 +15,7 @@ TWENTY_API_TOKEN=your_token npx twentycrm-graphql-mcp
 | Variable | Required | Description |
 |---|---|---|
 | `TWENTY_API_TOKEN` | Yes | Your Twenty API token (Settings > API & Webhooks) |
-| `TWENTY_GQL_URL` | No | GraphQL endpoint. Defaults to `https://crm.decodedata.io/graphql` |
+| `TWENTY_GQL_URL` | No | Your Twenty instance's GraphQL endpoint. For cloud-hosted, it's `https://[your-org].twenty.com/graphql`. For self-hosted, it's `https://[your-domain]/graphql`. |
 
 ## Claude Desktop Configuration
 
