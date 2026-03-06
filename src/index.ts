@@ -151,7 +151,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const capitalized =
           objectName.charAt(0).toUpperCase() + objectName.slice(1);
         const mutation = `
-          mutation Update${capitalized}($id: ID!, $data: ${capitalized}UpdateInput!) {
+          mutation Update${capitalized}($id: UUID!, $data: ${capitalized}UpdateInput!) {
             update${capitalized}(id: $id, data: $data) {
               id
             }
