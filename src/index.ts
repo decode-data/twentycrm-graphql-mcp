@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 
 const GQL_URL = process.env.TWENTY_GQL_URL || "https://crm.decodedata.io/graphql";
+const METADATA_URL = GQL_URL.replace(/\/graphql$/, "/metadata");
 const API_TOKEN = process.env.TWENTY_API_TOKEN;
 
 if (!API_TOKEN) {
@@ -24,10 +25,10 @@ const server = new Server(
   }
 );
 
-async function queryTwenty(query: string, variables: Record<string, unknown> = {}) {
+async function queryTwenty(query: string, variables: Record<string, unknown> = {}, url = GQL_URL) {
   try {
     const response = await axios.post(
-      GQL_URL,
+      url,
       { query, variables },
       {
         headers: {
@@ -100,18 +101,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "inspect_schema": {
         const query = `
           query {
-            _metadata {
-              objects {
-                name
-                fields {
-                  name
-                  type
-                  isCustom
+            objects {
+              edges {
+                node {
+                  nameSingular
+                  namePlural
+                  fields {
+                    edges {
+                      node {
+                        name
+                        type
+                        isCustom
+                      }
+                    }
+                  }
                 }
               }
             }
           }`;
-        const result = await queryTwenty(query);
+        const result = await queryTwenty(query, {}, METADATA_URL);
         return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       }
 
