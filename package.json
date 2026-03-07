@@ -1,13 +1,15 @@
 {
   "name": "twentycrm-graphql-mcp",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "MCP server for Twenty CRM GraphQL API",
   "type": "module",
   "bin": {
     "twentycrm-graphql-mcp": "./build/index.js"
   },
+  "keywords": ["mcp", "model-context-protocol", "twenty", "twenty-crm", "crm", "graphql", "claude"],
+  "files": ["build"],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && chmod +x build/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

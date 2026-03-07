@@ -18,7 +18,7 @@ if (!API_TOKEN) {
 const server = new Server(
   {
     name: "twentycrm-graphql-mcp",
-    version: "0.0.2",
+    version: "0.0.4",
   },
   {
     capabilities: { tools: {} },
