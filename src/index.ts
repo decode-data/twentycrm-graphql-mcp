@@ -7,7 +7,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import axios from "axios";
 
-const GQL_URL = process.env.TWENTY_GQL_URL || "https://crm.decodedata.io/graphql";
+const GQL_URL = process.env.TWENTY_GQL_URL || "https://api.twenty.com/graphql";
 const METADATA_URL = GQL_URL.replace(/\/graphql$/, "/metadata");
 const API_TOKEN = process.env.TWENTY_API_TOKEN;
 
@@ -18,7 +18,7 @@ if (!API_TOKEN) {
 const server = new Server(
   {
     name: "twentycrm-graphql-mcp",
-    version: "0.0.1",
+    version: "0.0.2",
   },
   {
     capabilities: { tools: {} },

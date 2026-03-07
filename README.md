@@ -26,7 +26,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "twentycrm": {
       "command": "npx",
-      "args": ["twentycrm-graphql-mcp"],
+      "args": ["-y", "twentycrm-graphql-mcp"],
       "env": {
         "TWENTY_API_TOKEN": "your_token_here",
         "TWENTY_GQL_URL": "https://your-instance.com/graphql"
