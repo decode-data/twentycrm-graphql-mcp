@@ -18,7 +18,7 @@ if (!API_TOKEN) {
 const server = new Server(
   {
     name: "twentycrm-graphql-mcp",
-    version: "0.0.4",
+    version: "0.0.8",
   },
   {
     capabilities: { tools: {} },
@@ -74,20 +74,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
-      name: "update_record",
-      description:
-        "Updates a record. Automatically handles composite fields like emails and links.",
+      name: "execute_metadata",
+      description: "Run any raw GraphQL query or mutation against the Twenty Metadata API (schema management: custom objects, fields, relations).",
       inputSchema: {
         type: "object",
         properties: {
-          objectName: {
-            type: "string",
-            description: "e.g., 'person' or 'company'",
-          },
-          id: { type: "string", format: "uuid" },
-          data: { type: "object", description: "Fields to update" },
+          query: { type: "string", description: "The GraphQL query or mutation string" },
+          variables: { type: "object", description: "Optional variables for the query" },
         },
-        required: ["objectName", "id", "data"],
+        required: ["query"],
       },
     },
   ],
@@ -129,35 +124,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       }
 
-      case "update_record": {
-        const { objectName, id, data } = args as {
-          objectName: string;
-          id: string;
-          data: Record<string, unknown>;
-        };
-        const formattedData = { ...data };
-
-        // Smart wrapping: handle Twenty composite field types
-        if (typeof formattedData.emails === "string") {
-          formattedData.emails = {
-            primaryEmail: formattedData.emails,
-            additionalEmails: [],
-          };
-        }
-        if (typeof formattedData.domainName === "string") {
-          formattedData.domainName = { primaryLinkUrl: formattedData.domainName };
-        }
-
-        const capitalized =
-          objectName.charAt(0).toUpperCase() + objectName.slice(1);
-        const mutation = `
-          mutation Update${capitalized}($id: UUID!, $data: ${capitalized}UpdateInput!) {
-            update${capitalized}(id: $id, data: $data) {
-              id
-            }
-          }`;
-
-        const result = await queryTwenty(mutation, { id, data: formattedData });
+      case "execute_metadata": {
+        const typedArgs = args as { query: string; variables?: Record<string, unknown> };
+        const result = await queryTwenty(typedArgs.query, typedArgs.variables, METADATA_URL);
         return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       }
 

@@ -48,12 +48,10 @@ Run any raw GraphQL query or mutation against Twenty.
 - `query` (string, required): The GraphQL query or mutation
 - `variables` (object, optional): Variables for the query
 
-### `update_record`
-Update a record with automatic composite field handling.
+### `execute_metadata`
+Run any raw GraphQL query or mutation against the Twenty Metadata API (schema management: custom objects, fields, relations).
 
 **Parameters:**
-- `objectName` (string): e.g. `person` or `company`
-- `id` (string): UUID of the record
-- `data` (object): Fields to update
+- `query` (string, required): The GraphQL query or mutation
+- `variables` (object, optional): Variables for the query
 
-Composite fields are handled automatically — pass `emails` as a plain string and it will be wrapped into `{ primaryEmail, additionalEmails }`.
