@@ -120,8 +120,36 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "execute_graphql": {
         const typedArgs = args as { query: string; variables?: Record<string, unknown> };
-        const result = await queryTwenty(typedArgs.query, typedArgs.variables);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+        try {
+          const result = await queryTwenty(typedArgs.query, typedArgs.variables);
+          return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (message.includes("duplicate entry")) {
+            // Try to find the soft-deleted conflicting record
+            const objectMatch = typedArgs.query.match(/create(?:One)?(\w+)\s*[({]/i);
+            if (objectMatch) {
+              const objectType = objectMatch[1];
+              const pluralType = objectType.endsWith("s") ? `${objectType}es` : `${objectType}s`;
+              try {
+                const deleted = await queryTwenty(
+                  `query { ${pluralType.charAt(0).toLowerCase() + pluralType.slice(1)}(filter: { deletedAt: { is: NOT_NULL } }) { edges { node { id } } } }`
+                );
+                const deletedIds = deleted?.data?.[pluralType.charAt(0).toLowerCase() + pluralType.slice(1)]?.edges?.map((e: { node: { id: string } }) => e.node.id) ?? [];
+                const hint = deletedIds.length > 0
+                  ? ` Soft-deleted ${objectType} IDs that may be conflicting: ${deletedIds.join(", ")}. Use destroyCompany/destroyPerson etc. to permanently remove before recreating.`
+                  : "";
+                throw new Error(`${message}.${hint}`);
+              } catch (innerError: unknown) {
+                // If lookup fails, just rethrow original with a generic hint
+                const innerMessage = innerError instanceof Error ? innerError.message : String(innerError);
+                if (innerMessage.includes("duplicate entry")) throw innerError;
+                throw new Error(`${message}. Note: there may be a soft-deleted record with the same unique field — use destroy before recreating.`);
+              }
+            }
+          }
+          throw error;
+        }
       }
 
       case "execute_metadata": {
