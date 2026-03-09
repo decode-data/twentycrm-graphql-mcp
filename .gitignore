@@ -2,3 +2,5 @@ node_modules
 build
 .env
 .mcp.json
+terraform/.terraform/
+terraform/errored.tfstate
